@@ -98,8 +98,9 @@ class Info extends React.Component {
     return (
       <div className="info">
         <hgroup className="main">
+          <img src="https://as-dev.auxin.cloud/static/media/logo.5d596421854c2168c618fd0e3f5ddd5e.svg" alt="" srcset="" />
+          <a href="https://alphaai-dev.auxin.cloud" className="title" style={{fontSize: 40, textDecoration: "none", fontWeight: "bold"}}>{title}</a>
           <h2 className="title">
-            {title}
             <span>
               {version && <VersionStamp version={version} />}
               <OpenAPIVersion oasVersion="2.0" />
