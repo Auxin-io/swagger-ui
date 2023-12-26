@@ -1,8 +1,14 @@
 import React from "react"
 import PropTypes from "prop-types"
 
-export default class App extends React.Component {
+import RollingLoadSVG from "core/assets/rolling-load.svg"
 
+export default class App extends React.Component {
+  constructor() {
+    super()
+    this.state = { isLoading: true }
+
+  }
   getLayout() {
     let { getComponent, layoutSelectors } = this.props
     const layoutName = layoutSelectors.current()
@@ -31,34 +37,37 @@ export default class App extends React.Component {
       redirect: 'follow'
     };
     try {
-      const resp1 = await fetch("https://platform-dev.auxin.cloud/api/v1/user/token/validate", requestOptions)
-      console.log(resp1);
-      this.setState({
-        respStatus: resp1.status
-      })
+      // console.log(`ENV VAR CLOUD ENVIRONMENT ${process.env.CLOUD_ENVIRONMENT}`);
+      // let url = "https://platform.auxin.cloud/api/v1/user"
+      // if (process.env.CLOUD_ENVIRONMENT == "dev" || process.env.CLOUD_ENVIRONMENT == "un") {
+      //   url = "https://platform-dev.auxin.cloud/api/v1/user"
+      // }
+      let url = "https://platform-dev.auxin.cloud/api/v1/user"
+      const resp1 = await fetch(`${url}/token/validate`, requestOptions)
+      if (resp1.ok) {
+        this.setState({ isLoading: false })
+        return
+
+      }
+
+      window.location.replace("https://alphaai-dev.auxin.cloud");
+
+
     } catch (error) {
       console.log(error);
     }
   }
 
   render() {
+    const { isLoading } = this.state
+    console.log(this.state.isLoading);
     const Layout = this.getLayout()
 
-    console.log(this?.state?.respStatus);
-
-    if (this?.state?.respStatus == undefined) {
-      return null;
-    }
-    if (this?.state?.respStatus && this?.state?.respStatus != 200) {
-      console.log("Redirect");
-      // window.location.replace("https://alphaai-dev.auxin.cloud");
-    } else {
-      console.log("Dont Redirect");
-    }
-
-    return (
-      <Layout />
-    )
+    return isLoading ? <span className="model model-title">
+      <span className="model-title__text">Loading</span>
+      <RollingLoadSVG height="20px" width="20px" />
+    </span> : <Layout />
+    // return isLoading ? <h1>Loading...</h1> : <Layout />
   }
 }
 
